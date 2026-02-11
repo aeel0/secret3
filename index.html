@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Will You Be My Valentine? 💝</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      padding: 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    p {
+      font-size: 1.6rem;
+      margin: 1.5rem 0;
+      line-height: 1.4;
+    }
+
+    .buttons {
+      margin: 2rem 0;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-size: 1.4rem;
+      padding: 14px 40px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    #yesBtn {
+      background: #ff4757;
+      color: white;
+    }
+
+    #yesBtn:hover {
+      background: #ff6b81;
+      transform: scale(1.1);
+    }
+
+    #noBtn {
+      background: #57606f;
+      color: white;
+      position: relative;
+    }
+
+    #noBtn:hover {
+      background: #747d8c;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 6s linear infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); }
+      100% { transform: translateY(-150px) rotate(720deg); }
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ff9a9e; }
+      to   { text-shadow: 0 0 30px #ff4757, 0 0 50px #ff6b81; }
+    }
+
+    .hidden { display: none; }
+    .reveal { animation: fadeIn 1.5s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden YouTube embed for background music: Raindance by Dave ft. Tems -->
+  <!-- Autoplay + loop (playlist required for single video loop), hidden UI -->
+  <iframe 
+    id="bgMusic"
+    width="1" 
+    height="1" 
+    src="https://www.youtube.com/embed/SOJpE1KMUbo?autoplay=1&loop=1&playlist=SOJpE1KMUbo&controls=0&iv_load_policy=3&rel=0&modestbranding=1&playsinline=1" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen 
+    style="position: absolute; opacity: 0; pointer-events: none;">
+  </iframe>
+
+  <div class="hearts" id="hearts"></div>
+
+  <div class="container" id="mainContent">
+    <h1>Hey there, cutie! 💕</h1>
+    <p id="question">Will you be my Valentine, Bicky's special someone? 🌹</p>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes! 💖</button>
+      <button id="noBtn">No 😢</button>
+    </div>
+  </div>
+
+  <div class="container hidden" id="yesPage">
+    <h1 class="reveal">SALAMAT>! 🎉💝</h1>
+    <p class="reveal" style="font-size: 2rem;">Thank you for saying yes. <3>
+    <p class="reveal">Come back fast. 💗</p>
+    <p class="reveal">Can't wait for Feb 14th with you! </p>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const question = document.getElementById('question');
+    const mainContent = document.getElementById('mainContent');
+    const yesPage = document.getElementById('yesPage');
+    const heartsContainer = document.getElementById('hearts');
+
+    // Floating hearts background
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = ['❤️','💖','💕','💗','💓'][Math.floor(Math.random()*5)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      heart.style.fontSize = (Math.random() * 1.5 + 1.5) + 'rem';
+      heartsContainer.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 7000);
+    }
+
+    setInterval(createHeart, 400);
+
+    // No button playful escape + message change
+    const noPhrases = [
+      "Are you sure? 😭",
+      "Please reconsider... 🥺",
+      "No is not an option! 😤💕",
+      "Try again cutie~ 😉",
