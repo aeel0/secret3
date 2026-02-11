@@ -7,11 +7,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -25,33 +21,13 @@
       text-align: center;
     }
 
-    .container {
-      max-width: 600px;
-      padding: 20px;
-      position: relative;
-      z-index: 10;
-    }
+    .container { max-width: 600px; padding: 20px; position: relative; z-index: 10; }
 
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
-      animation: glow 2s ease-in-out infinite alternate;
-    }
+    h1 { font-size: 3.5rem; margin-bottom: 1.5rem; text-shadow: 0 0 20px rgba(255, 105, 180, 0.8); animation: glow 2s ease-in-out infinite alternate; }
 
-    p {
-      font-size: 1.6rem;
-      margin: 1.5rem 0;
-      line-height: 1.4;
-    }
+    p { font-size: 1.6rem; margin: 1.5rem 0; line-height: 1.4; }
 
-    .buttons {
-      margin: 2rem 0;
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
+    .buttons { margin: 2rem 0; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
 
     button {
       font-size: 1.4rem;
@@ -63,76 +39,30 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
 
-    #yesBtn {
-      background: #ff4757;
-      color: white;
-    }
+    #yesBtn { background: #ff4757; color: white; }
+    #yesBtn:hover { background: #ff6b81; transform: scale(1.1); }
 
-    #yesBtn:hover {
-      background: #ff6b81;
-      transform: scale(1.1);
-    }
+    #noBtn { background: #57606f; color: white; position: relative; }
+    #noBtn:hover { background: #747d8c; }
 
-    #noBtn {
-      background: #57606f;
-      color: white;
-      position: relative;
-    }
+    .hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 
-    #noBtn:hover {
-      background: #747d8c;
-    }
+    .heart { position: absolute; font-size: 2rem; animation: float 6s linear infinite; opacity: 0.9; }
 
-    .hearts {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 5;
-    }
+    @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); } 100% { transform: translateY(-150px) rotate(720deg); } }
 
-    .heart {
-      position: absolute;
-      font-size: 2rem;
-      animation: float 6s linear infinite;
-      opacity: 0.9;
-    }
-
-    @keyframes float {
-      0% { transform: translateY(100vh) rotate(0deg); }
-      100% { transform: translateY(-150px) rotate(720deg); }
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #ff9a9e; }
-      to   { text-shadow: 0 0 30px #ff4757, 0 0 50px #ff6b81; }
-    }
+    @keyframes glow { from { text-shadow: 0 0 10px #ff9a9e; } to { text-shadow: 0 0 30px #ff4757, 0 0 50px #ff6b81; } }
 
     .hidden { display: none; }
     .reveal { animation: fadeIn 1.5s ease; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to   { opacity: 1; transform: scale(1); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
 <body>
 
-  <!-- Hidden YouTube embed for background music: Raindance by Dave ft. Tems -->
-  <!-- Autoplay + loop (playlist required for single video loop), hidden UI -->
-  <iframe 
-    id="bgMusic"
-    width="1" 
-    height="1" 
-    src="https://www.youtube.com/embed/SOJpE1KMUbo?autoplay=1&loop=1&playlist=SOJpE1KMUbo&controls=0&iv_load_policy=3&rel=0&modestbranding=1&playsinline=1" 
-    frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-    allowfullscreen 
-    style="position: absolute; opacity: 0; pointer-events: none;">
-  </iframe>
+  <!-- Hidden YouTube player for Raindance -->
+  <div id="player"></div>
 
   <div class="hearts" id="hearts"></div>
 
@@ -148,20 +78,57 @@
 
   <div class="container hidden" id="yesPage">
     <h1 class="reveal">SALAMAT>! 🎉💝</h1>
-    <p class="reveal" style="font-size: 2rem;">Thank you for saying yes. <3>
+    <p class="reveal">Thank you for saying yes. <3</p>
     <p class="reveal">Come back fast. 💗</p>
-    <p class="reveal">Can't wait for Feb 14th with you! </p>
+    <p class="reveal">Can't wait for Feb 14th with you!</p>
   </div>
 
-  <script>
-    const noBtn = document.getElementById('noBtn');
-    const yesBtn = document.getElementById('yesBtn');
-    const question = document.getElementById('question');
-    const mainContent = document.getElementById('mainContent');
-    const yesPage = document.getElementById('yesPage');
-    const heartsContainer = document.getElementById('hearts');
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 
-    // Floating hearts background
+  <script>
+    let player;
+    let hasInteracted = false;
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '1',
+        width: '1',
+        videoId: 'SOJpE1KMUbo',
+        playerVars: {
+          'autoplay': 1,
+          'loop': 1,
+          'playlist': 'SOJpE1KMUbo',
+          'controls': 0,
+          'iv_load_policy': 3,
+          'rel': 0,
+          'modestbranding': 1,
+          'playsinline': 1,
+          'mute': 1  // Start muted for reliable autoplay
+        },
+        events: {
+          'onReady': onPlayerReady
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      event.target.playVideo();
+    }
+
+    // Unmute on first interaction
+    function handleInteraction() {
+      if (!hasInteracted && player && player.unMute) {
+        player.unMute();
+        player.setVolume(40);  // Adjust volume (0-100)
+        hasInteracted = true;
+      }
+    }
+
+    document.addEventListener('click', handleInteraction, { once: true });
+    document.getElementById('noBtn').addEventListener('mouseover', handleInteraction);
+
+    // Floating hearts
     function createHeart() {
       const heart = document.createElement('div');
       heart.classList.add('heart');
@@ -169,16 +136,46 @@
       heart.style.left = Math.random() * 100 + 'vw';
       heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
       heart.style.fontSize = (Math.random() * 1.5 + 1.5) + 'rem';
-      heartsContainer.appendChild(heart);
-
+      document.getElementById('hearts').appendChild(heart);
       setTimeout(() => heart.remove(), 7000);
     }
-
     setInterval(createHeart, 400);
 
-    // No button playful escape + message change
+    // No button fun
     const noPhrases = [
       "Are you sure? 😭",
       "Please reconsider... 🥺",
       "No is not an option! 😤💕",
       "Try again cutie~ 😉",
+      "You can't resist me forever! 😏",
+      "Click Yes or I'll cry... 😢"
+    ];
+    let noCount = 0;
+
+    document.getElementById('noBtn').addEventListener('mouseover', () => {
+      const noBtn = document.getElementById('noBtn');
+      noBtn.style.position = 'absolute';
+      noBtn.style.left = (Math.random() * 80 + 10) + '%';
+      noBtn.style.top = (Math.random() * 80 + 10) + '%';
+      
+      noCount++;
+      if (noCount < noPhrases.length) {
+        document.getElementById('question').textContent = noPhrases[noCount];
+      } else {
+        document.getElementById('question').textContent = "Okay fine... but Yes is still better! 😘";
+      }
+    });
+
+    // Yes reveal
+    document.getElementById('yesBtn').addEventListener('click', () => {
+      document.getElementById('mainContent').classList.add('hidden');
+      document.getElementById('yesPage').classList.remove('hidden');
+      
+      for (let i = 0; i < 50; i++) {
+        setTimeout(createHeart, i * 80);
+      }
+    });
+  </script>
+
+</body>
+</html>
